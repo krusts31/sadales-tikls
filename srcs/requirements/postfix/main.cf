@@ -1,0 +1,53 @@
+maillog_file = /dev/stdout
+
+compatibility_level=3.6
+
+
+myhostname = {{ .Env.POSTFIX_MYHOSTNAME }}
+
+mydomain = {{ .Env.POSTFIX_DOMAIN }}
+
+myorigin = /etc/mailname
+
+mydestination = localhost
+
+relayhost = {{ .Env.SMTP_RELAY }}
+
+smtpd_sasl_auth_enable=yes
+
+smtpd_sasl_type = dovecot
+
+smtpd_sasl_path = inet:{{ .Env.DOVECOT_HOSTNAME }}:12345
+
+smtpd_tls_security_level=may
+smtpd_tls_auth_only=yes
+
+smtpd_tls_cert_file=/etc/letsencrypt/live/{{ .Env.POSTFIX_DOMAIN }}/fullchain.pem
+smtpd_tls_key_file=/etc/letsencrypt/live/{{ .Env.POSTFIX_DOMAIN }}/privkey.pem
+
+inet_protocols = ipv4
+
+#matches ports
+virtual_transport = lmtp:inet:{{ .Env.DOVECOT_HOSTNAME }}:12348
+
+#matches
+smtpd_recipient_restrictions = reject_unauth_destination check_policy_service inet:{{ .Env.DOVECOT_HOSTNAME }}:12340
+
+virtual_mailbox_domains = mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+virtual_mailbox_maps = mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
+virtual_alias_maps = mysql:/etc/postfix/mysql-virtual-alias-maps.cf
+
+smtpd_sender_login_maps=mysql:/etc/postfix/mysql-email2mail.cf
+
+smtpd_milters=inet:rspamd:11332
+non_smtpd_milters=inet:rspamd:11332
+milter_mail_macros=i {mail_addr} {client_addr} {client_name} {auth_authen}
+
+smtp_helo_name = Hi this is hello
+smtp_sasl_auth_enable = yes
+smtp_sasl_security_options = noanonymous
+smtp_use_tls = yes
+smtp_tls_security_level = encrypt
+smtp_tls_note_starttls_offer = yes
+
+smtp_sasl_password_maps = lmdb:/etc/postfix/sasl_passwd

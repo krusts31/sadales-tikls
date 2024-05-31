@@ -1,0 +1,6 @@
+user = {{ .Env.MARIADB_MAIL_SERVER }}
+password = {{ .Env.MARIADB_MAIL_SERVER_PASSWORD }}
+hosts = {{ .Env.MARIADB_HOST_NAME }}
+dbname = {{ .Env.MAILSERVER_DATABASE_NAME }}
+
+query = SELECT 1 FROM virtual_users WHERE email='%s'

@@ -1,0 +1,216 @@
+services:
+
+  nginx:
+    restart: on-failure
+    container_name: nginx
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+      target: prod
+    hostname: nginx
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      wordpress:
+        condition: service_healthy
+    networks:
+      - store-net
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - vol_wordpress:/var/www/wordpress/:delegated
+      - ./requirements/certbot/conf:/etc/letsencrypt #this is for the config files
+      - ./requirements/certbot/www:/var/www/certbot  #this is for the lets encrypt challange
+      - ./requirements/nginx/pictures:/var/www/pictures
+      - vol_rspamd:/var/www/rspamd/:delegated
+    healthcheck:
+      test: ["CMD", "/tmp/healthcheck.sh"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      WORDPRESS_URL:             ${WORDPRESS_URL}
+
+  wordpress:
+    restart: on-failure
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+      target: prod
+    container_name: wordpress
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    hostname: wordpress
+    volumes:
+      - vol_wordpress:/var/www/wordpress/:delegated
+    networks:
+      - store-net
+    environment:
+      WORDPRESS_URL:             ${WORDPRESS_URL}
+      WORDPRESS_TITLE:           ${WORDPRESS_TITLE}
+      WORDPRESS_ADMIN:           ${WORDPRESS_ADMIN}
+      WORDPRESS_ADMIN_PASSWORD:  ${WORDPRESS_ADMIN_PASSWORD}
+      WORDPRESS_ADMIN_EMAIL:     ${WORDPRESS_ADMIN_EMAIL}
+      WORDPRESS_DATABASE_NAME:   ${WORDPRESS_DATABASE_NAME}
+      WORDPRESS_USER:            ${WORDPRESS_USER}
+      WORDPRESS_USER_EMAIL:      ${WORDPRESS_USER_EMAIL}
+      WORDPRESS_USER_ROLE:       ${WORDPRESS_USER_ROLE}
+      WORDPRESS_USER_PASSWORD:   ${WORDPRESS_USER_PASSWORD}
+      MARIADB_USER:              ${MARIADB_USER}
+      MARIADB_USER_PASSWORD:     ${MARIADB_USER_PASSWORD}
+      MARIADB_ROOT_PASSWORD:     ${MARIADB_ROOT_PASSWORD}
+      MARIADB_HOST_NAME:         ${MARIADB_HOST_NAME}
+    healthcheck:
+      test: ["CMD", "/tmp/healthcheck.sh"]
+      interval: 20s
+      timeout: 20s
+      retries: 5
+
+  mariadb:
+    restart: on-failure
+    container_name: mariadb
+    hostname: mariadb
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+      target: prod
+    volumes:
+      - vol_mariadb:/var/lib/mysql/:delegated
+    networks:
+      - store-net
+    environment:
+      WORDPRESS_DATABASE_NAME:      ${WORDPRESS_DATABASE_NAME}
+      MAILSERVER_DATABASE_NAME:     ${MAILSERVER_DATABASE_NAME}
+      MARIADB_USER:                 ${MARIADB_USER}
+      MARIADB_USER_PASSWORD:        ${MARIADB_USER_PASSWORD}
+      MARIADB_ROOT_PASSWORD:        ${MARIADB_ROOT_PASSWORD}
+      MARIADB_MAIL_ADMIN:           ${MARIADB_MAIL_ADMIN}
+      MARIADB_MAIL_ADMIN_PASSWORD:  ${MARIADB_MAIL_ADMIN_PASSWORD}
+      MARIADB_MAIL_SERVER:          ${MARIADB_MAIL_SERVER}
+      MARIADB_MAIL_SERVER_PASSWORD: ${MARIADB_MAIL_SERVER_PASSWORD}
+      DOMAIN:                       ${DOMAIN}
+      EMAIL_USER:                         ${EMAIL_USER}
+      EMAIL_USER_PASSWORD:                ${EMAIL_USER_PASSWORD}
+      EMAIL_BOT: ${EMAIL_BOT}
+      EMAIL_BOT_PASSWORD: ${EMAIL_BOT_PASSWORD}
+      EMAIL_FORENSICS: ${EMAIL_FORENSICS}
+      EMAIL_FORENSICS_PASSWORD: ${EMAIL_FORENSICS_PASSWORD}
+      EMAIL_REPORTS: ${EMAIL_REPORTS}
+      EMAIL_REPORTS_PASSWORD: ${EMAIL_REPORTS_PASSWORD}
+      EMAIL_POSTMASTER: ${EMAIL_POSTMASTER}
+      EMAIL_POSTMASTER_PASSWORD: ${EMAIL_POSTMASTER_PASSWORD}
+    healthcheck:
+      test: ["CMD", "sh", "/tmp/health-check.sh"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+
+  postfix:
+    restart: on-failure
+    container_name: postfix
+    hostname: "postfix"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    build:
+      context: ./requirements/postfix
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - "25:25"
+      - "587:587"
+      - "465:465"
+    environment:
+      POSTFIX_SMTP_HELO_NAME:       ${POSTFIX_SMTP_HELO_NAME}
+      POSTFIX_MYHOSTNAME:           ${POSTFIX_MYHOSTNAME}
+      MARIADB_HOST_NAME:            ${MARIADB_HOST_NAME}
+      MAILSERVER_DATABASE_NAME:     ${MAILSERVER_DATABASE_NAME}
+      MARIADB_MAIL_ADMIN_PASSWORD:  ${MARIADB_MAIL_ADMIN_PASSWORD}
+      MARIADB_MAIL_SERVER:          ${MARIADB_MAIL_SERVER}
+      MARIADB_MAIL_SERVER_PASSWORD: ${MARIADB_MAIL_SERVER_PASSWORD}
+      DOMAIN:                       ${DOMAIN}
+      EMAIL_USER_PASSWORD:          ${EMAIL_USER_PASSWORD}
+      EMAIL_USER:                   ${EMAIL_USER}
+      DOVECOT_HOSTNAME:             ${DOVECOT_HOSTNAME}
+      POSTFIX_DOMAIN:               ${POSTFIX_MYHOSTNAME}
+      SMTP_RELAY:                   ${SMTP_RELAY} 
+      SMTP_RELAY_USERNAME:          ${SMTP_RELAY_USERNAME}
+      SMTP_RELAY_PASSWORD:          ${SMTP_RELAY_PASSWORD}
+    networks:
+      - store-net
+    volumes:
+      - ./requirements/certbot/conf:/etc/letsencrypt
+    healthcheck:
+      test: ["CMD", "/tmp/health-check.sh"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+
+  dovecot:
+    restart: on-failure
+    container_name: dovecot
+    hostname: "dovecot"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    build:
+      context: ./requirements/dovecot
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - "24:24"
+      - "143:143"
+      - "993:993"
+    environment:
+      SMTP_DOMAIN:      ${SMTP_DOMAIN}
+      DOVECOT_HOSTNAME: ${DOVECOT_HOSTNAME}
+      DOMAIN:           ${POSTFIX_MYHOSTNAME}
+      MARIADB_HOST_NAME:         ${MARIADB_HOST_NAME}
+      MAILSERVER_DATABASE_NAME:     ${MAILSERVER_DATABASE_NAME}
+      MARIADB_MAIL_SERVER:          ${MARIADB_MAIL_SERVER}
+      MARIADB_MAIL_SERVER_PASSWORD: ${MARIADB_MAIL_SERVER_PASSWORD}
+    networks:
+      - store-net
+    volumes:
+      - ./requirements/certbot/conf:/etc/letsencrypt
+      - vol_dovecot:/var/vmail
+
+  rspamd:
+    restart: on-failure
+    container_name: rspamd
+    networks:
+      - store-net
+    build:
+      context: ./requirements/rspamd
+      dockerfile: Dockerfile
+      target: prod
+    volumes:
+      - vol_rspamd:/usr/share/rspamd/www/:delegated
+      - ./requirements/rspamd/keys:/tmp/keys
+    environment:
+      RSPAMD_PASSWORD:            ${RSPAMD_PASSWORD}
+      RSPAMD_SELECTOR:            ${RSPAMD_SELECTOR}
+      DOMAIN:                     ${DOMAIN}
+
+  redis:
+    restart: on-failure
+    container_name: redis
+    networks:
+      - store-net
+    build:
+      context: ./requirements/redis
+      dockerfile: Dockerfile
+      target: prod
+
+networks:
+  store-net:
+    driver: bridge
+    name: store-net
+
+volumes:
+  vol_wordpress:
+  vol_mariadb:
+  vol_rspamd:
+  vol_dovecot:

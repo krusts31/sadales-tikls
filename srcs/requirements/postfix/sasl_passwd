@@ -1,0 +1,1 @@
+{{ .Env.SMTP_RELAY }} {{ .Env.SMTP_RELAY_USERNAME }}:{{ .Env.SMTP_RELAY_PASSWORD }}
