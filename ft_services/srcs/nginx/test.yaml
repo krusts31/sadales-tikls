@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test
+spec:
+  volumes:
+  - name: etc-letsencrypt-vol
+    persistentVolumeClaim:
+      claimName: nginx-etc-letsencryp-vol-claim
+  - name: var-www-certbot-vol
+    persistentVolumeClaim:
+      claimName: nginx-var-www-vol-letsencrypt-claim
+  containers:
+  - name: init-certbot
+    image: certbot/certbot
+    command:
+      - sh
+      - -c
+      - |
+        wget "https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf" -O "/etc/letsencrypt/options-ssl-nginx.conf" && \
+        wget "https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem" -O "/var/www/certbot/ssl-dhparams.pem" && \
+        mkdir -p /etc/letsencrypt/live/ft_services.com && \
+        openssl req --x509 --nodes --newkey rsa:2048 --days 1 \
+          --keyout /etc/letsencrypt/live/ft_services.com/privkey.pem \
+          --out /etc/letsencrypt/live/ft_services.com/fullchain.pem \
+          --subj "/CN=ft_services.com"
+    volumeMounts:
+    - name: etc-letsencrypt-vol
+      mountPath: /etc/letsencrypt
+    - name: var-www-certbot-vol
+      mountPath: /var/www/certbot

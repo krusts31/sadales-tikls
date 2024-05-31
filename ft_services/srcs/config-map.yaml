@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ft-services-config
+data:
+  db_host: "mysql"
+  wordpress_url: "wordpress"
+  wordpress_title: "wordpress_title"
+  ftps_host: "vsftp"
+  registry_storage_delete_enabled: true
+immutable: true

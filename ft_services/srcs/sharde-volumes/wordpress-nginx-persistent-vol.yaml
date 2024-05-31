@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nginx-wordpress-vol
+  labels:
+    pv: nginx-wordpress-vol
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /home/docker/nginx-wordpress-vol
+  persistentVolumeReclaimPolicy: Retain

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-etc-letsencryp-vol-claim
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 10Mi
+  selector:
+    matchLabels:
+      pv: nginx-etc-letsencrypt-vol

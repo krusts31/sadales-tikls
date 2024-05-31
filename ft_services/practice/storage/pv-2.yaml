@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: test-2
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteMany

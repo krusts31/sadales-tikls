@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      volumes:
+      - name: nginx-wordpress-vol
+        persistentVolumeClaim:
+          claimName: nginx-wordpress-vol-claim
+      containers:
+      - name: wordpress
+        image: wordpress
+        imagePullPolicy: Never
+        volumeMounts:
+        - name: nginx-wordpress-vol
+          mountPath: /var/www/wordpress
+        env:
+          - name: WORDPRESS_DATABASE_NAME
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: wordpress_database_name
+          - name: MYSQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: mysql_user
+          - name: MYSQL_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: mysql_user_password
+          - name: MYSQL_HOST_NAME
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: mysql_host_name
+          - name: WORDPRESS_TITLE
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: wordpress_title
+          - name: WORDPRESS_ADMIN
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: wordpress_admin
+          - name: WORDPRESS_ADMIN_EMAIL
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: wordpress_admin_email
+          - name: WORDPRESS_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: wordpress_admin_password
+          - name: WORDPRESS_USER
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: wordpress_user
+          - name: WORDPRESS_USER_ROLE
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: wordpress_user_role
+          - name: WORDPRESS_USER_EMAIL
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: wordpress_user_email
+          - name: WORDPRESS_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: wordpress_user_password
+          - name: WORDPRESS_URL
+            valueFrom:
+              secretKeyRef:
+                name: ft-services-secret
+                key: wordpress_url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress
+spec:
+  type: ClusterIP
+  selector:
+    app: wordpress
+  ports:
+  - targetPort: 9000
+    protocol: TCP
+    port: 9000
+

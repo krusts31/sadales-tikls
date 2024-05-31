@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: etc-letsencrypt-vol
+        persistentVolumeClaim:
+          claimName: nginx-etc-letsencryp-vol-claim
+      - name: var-www-certbot-vol
+        persistentVolumeClaim:
+          claimName: nginx-var-www-vol-letsencrypt-claim
+      - name: nginx-wordpress-vol
+        persistentVolumeClaim:
+          claimName: nginx-wordpress-vol-claim
+      containers:
+      - name: nginx
+        image: nginx
+        imagePullPolicy: Never
+        volumeMounts:
+        - name: etc-letsencrypt-vol
+          mountPath: /etc/letsencrypt
+        - name: var-www-certbot-vol
+          mountPath: /var/www/certbot
+        - name: nginx-wordpress-vol
+          mountPath: /var/www/wordpress
+      initContainers:
+      - name: init-certbot
+        image: certbot/certbot
+        command:
+          - sh
+          - -c
+          - |
+            wget "https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf" -O "/etc/letsencrypt/options-ssl-nginx.conf" && \
+            wget "https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem" -O "/var/www/certbot/ssl-dhparams.pem" && \
+            mkdir -p /etc/letsencrypt/live/ft_services.com && \
+            openssl req --x509 --nodes --newkey rsa:2048 --days 1 \
+              --keyout /etc/letsencrypt/live/ft_services.com/privkey.pem \
+              --out /etc/letsencrypt/live/ft_services.com/fullchain.pem \
+              --subj "/CN=ft_services.com"
+        volumeMounts:
+        - name: etc-letsencrypt-vol
+          mountPath: /etc/letsencrypt
+        - name: var-www-certbot-vol
+          mountPath: /var/www/certbot
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  type: ClusterIP
+  selector:
+    app: nginx
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: 80
+  - protocol: TCP
+    name: https
+    port: 443
+    targetPort: 443
