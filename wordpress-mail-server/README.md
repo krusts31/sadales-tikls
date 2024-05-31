@@ -2,6 +2,8 @@
 
 Here's the tutorial I'm using to set up a mail server: https://workaround.org/ispmail-bookworm/. Note that the tutorial does not use microservices or Docker, so I've containerized it using the 1 process per container approach.
 
+https://workaround.org/ispmail-bookworm/
+
 ## How to Make It Work:
 
 ### Step 1
@@ -36,4 +38,3 @@ The setup includes Postfix, Dovecot for accessing emails, Rspamd for filtering s
 Turns out a lot of hosting providers block port 25, and it is really hard to unblock because it is outside of your control. You have to ask for permission via email. Good luck getting throw to their custumer support!
 
 So, sending emails is done via forwarding to an SMTP service. I'm hosting this server on AWS and using their Simple Mail Service to forward mail from Postfix. But receiving works fine.
-

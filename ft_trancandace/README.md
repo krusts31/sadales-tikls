@@ -6,32 +6,11 @@
 `docker-compose-dev.yaml` which will create a dev enviorment
 
 ```sh
-docker-compose -f docker-compose-dev.yaml up
-docker-compose -f docker-compose-dev.yaml up --build
+docker-compose -f docker-compose.yaml up --build
 ```
 
-how did I do this? Well in the frontend dir I craeted a new vue project
-then I added 2 docker files in that folder.
-This will always a new install
-Hot refresh works
 
-### How to add packages?
+go to localhost:4242
 
-```sh
-docker ps
-#get the id of the target docker container
-docker exec -it id /bin/sh
-vue add typescript
-exit
-```
-
-### Production
-
-`docker-compose-dev.yaml` which will create a production enviorment
-
-```sh
-docker-compose -f docker-compose-prod.yaml up
-docker-compose -f docker-compose-prod.yaml up --build
-```
-
-This on is for when we eval!
+you can only log in debug mode, but you can send messages,chat,play the game if you
+use 2 seperate browsers like google chorm and firefox so.

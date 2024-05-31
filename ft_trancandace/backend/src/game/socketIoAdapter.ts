@@ -18,7 +18,7 @@ export class SocketIoAdapter extends IoAdapter {
 
   createIOServer(port: number, options?: ServerOptions) {
     const cors = {
-      origin: [`http://` + process.env.HOST_ID + `:4242`],
+      origin: [`http://` + process.env.HOST_ID + `:4242`, 'http://localhost:4242'],
       credentials: true,
     };
     this.logger.log("configuring socketIO server with custom CORS options", {
