@@ -1,2 +1,0 @@
-dig -x 13.50.8.175
- dig -t ptr 13.50.8.175.in-addr.arpa

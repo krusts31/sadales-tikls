@@ -93,6 +93,18 @@ services:
       DOMAIN:                       ${DOMAIN}
       EMAIL_USER_PASSWORD:                ${EMAIL_USER_PASSWORD}
       EMAIL_USER:                         ${EMAIL_USER}
+      EMAIL_BOT:                    ${EMAIL_BOT}
+      EMAIL_BOT_PASSWORD:           ${EMAIL_BOT_PASSWORD}
+      EMAIL_FORENSICS:              ${EMAIL_FORENSICS}
+      EMAIL_FORENSICS_PASSWORD:     ${EMAIL_FORENSICS_PASSWORD}
+      EMAIL_REPORTS:                ${EMAIL_REPORTS}
+      EMAIL_REPORTS_PASSWORD:       ${EMAIL_REPORTS_PASSWORD}
+      EMAIL_POSTMASTER:             ${EMAIL_POSTMASTER}
+      EMAIL_POSTMASTER_PASSWORD:    ${EMAIL_POSTMASTER_PASSWORD}
+      EMAIL_COMPLAINTS:             ${EMAIL_COMPLAINTS}
+      EMAIL_COMPLAINTS_PASSWORD:    ${EMAIL_COMPLAINTS_PASSWORD}
+      EMAIL_REJECTEDORDERS:             ${EMAIL_REJECTEDORDERS}
+      EMAIL_REJECTEDORDERS_PASSWORD:    ${EMAIL_REJECTEDORDERS_PASSWORD}
     ports:
       - "3306:3306"
     healthcheck:
@@ -129,6 +141,9 @@ services:
       EMAIL_USER:                   ${EMAIL_USER}
       DOVECOT_HOSTNAME:             ${DOVECOT_HOSTNAME}
       POSTFIX_DOMAIN:           ${POSTFIX_MYHOSTNAME}
+      SMTP_RELAY:                   ${SMTP_RELAY} 
+      SMTP_RELAY_USERNAME:          ${SMTP_RELAY_USERNAME}
+      SMTP_RELAY_PASSWORD:          ${SMTP_RELAY_PASSWORD}
     networks:
       - store-net
     volumes:

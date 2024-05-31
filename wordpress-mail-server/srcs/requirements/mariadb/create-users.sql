@@ -39,3 +39,20 @@ VALUES ('5', '1', '{{ .Env.EMAIL_BOT_PASSWORD }}', '{{ .Env.EMAIL_BOT }}@{{ .Env
 
 REPLACE INTO mailserver.virtual_aliases (id, domain_id, source, destination)
 VALUES ('5', '1', '{{ .Env.EMAIL_BOT }}@{{ .Env.DOMAIN }}', '{{ .Env.EMAIL_BOT }}@{{ .Env.DOMAIN }}');
+
+
+-- rejectedorders
+
+REPLACE INTO mailserver.virtual_users (id, domain_id, password, email)
+VALUES ('6', '1', '{{ .Env.EMAIL_REJECTEDORDERS_PASSWORD }}', '{{ .Env.EMAIL_REJECTEDORDERS }}@{{ .Env.DOMAIN }}');
+
+REPLACE INTO mailserver.virtual_aliases (id, domain_id, source, destination)
+VALUES ('6', '1', '{{ .Env.EMAIL_REJECTEDORDERS }}@{{ .Env.DOMAIN }}', '{{ .Env.EMAIL_REJECTEDORDERS }}@{{ .Env.DOMAIN }}');
+
+-- complaints
+
+REPLACE INTO mailserver.virtual_users (id, domain_id, password, email)
+VALUES ('7', '1', '{{ .Env.EMAIL_COMPLAINTS_PASSWORD }}', '{{ .Env.EMAIL_COMPLAINTS }}@{{ .Env.DOMAIN }}');
+
+REPLACE INTO mailserver.virtual_aliases (id, domain_id, source, destination)
+VALUES ('7', '1', '{{ .Env.EMAIL_COMPLAINTS }}@{{ .Env.DOMAIN }}', '{{ .Env.EMAIL_COMPLAINTS }}@{{ .Env.DOMAIN }}');

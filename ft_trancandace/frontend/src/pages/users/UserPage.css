@@ -1,0 +1,20 @@
+.userCard {
+  padding: 30px;
+  border: solid 1px rgba(0, 0, 0, 0.08);
+  color: red;
+  background-color: rgb(255, 255, 255);
+}
+
+.user-image {
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border: solid 6px transparent;
+  border-radius: 50%;
+}
+
+.button-layout {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}

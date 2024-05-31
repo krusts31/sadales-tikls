@@ -1,0 +1,20 @@
+.messageContainers {
+  flex-direction: column;
+  display: flex;
+  font-family: "Studio Sans", sans-serif;
+  color: rgb(244, 241, 208);
+  border-radius: 5px;
+  min-width: 100%;
+}
+
+.message_right {
+  align-self: flex-end;
+  color: rgb(244, 241, 208);
+  text-align: right;
+}
+
+.message_left {
+  align-self: flex-start;
+  color: rgb(244, 241, 208);
+  text-align: left;
+}

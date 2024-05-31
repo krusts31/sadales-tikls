@@ -1,0 +1,22 @@
+.navBarContainer {
+  display: flex;
+  padding: 5px 0px 5px 15px;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+
+.logOut {
+  display: flex;
+  align-items: center;
+}
+
+.logOut .text {
+  color: white;
+}
+
+.nameProject {
+  margin: 0;
+  padding: 0;
+  color: white;
+}

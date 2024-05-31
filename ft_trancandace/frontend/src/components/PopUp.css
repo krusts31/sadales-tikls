@@ -1,0 +1,44 @@
+/* Popup style */
+
+/*Shadow*/
+.popup-box {
+  z-index: 999;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background: #00000090;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* position: relative; */
+  position: absolute;
+  background: #0000002a;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 75px;
+}
+
+.close-icon {
+  position: absolute;
+  top: 4px;
+  left: 10px;
+  color: rgb(0, 247, 255);
+  margin-left: auto;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.close-icon > * {
+  margin: 0;
+}
