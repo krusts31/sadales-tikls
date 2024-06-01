@@ -1,0 +1,62 @@
+Parameters:
+  ExistingSecurityGroupId:
+    Type: String
+    Description: The ID of the existing security group
+    Default: sg-09cceaa063099e593
+Resources:
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH and ICMP
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 587
+          ToPort: 587
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 25
+          ToPort: 25
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 24
+          ToPort: 24
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 143
+          ToPort: 143
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 993
+          ToPort: 993
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+
+  MyInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: eu-north-1a
+      InstanceType: t3.small
+      ImageId: ami-0506d6d51f1916a96
+      KeyName: eu-north-vitokap
+      SecurityGroups:
+        - !Ref MySecurityGroup
+      BlockDeviceMappings:
+        - DeviceName: "/dev/xvda"
+          Ebs:
+            VolumeSize: 25
+            VolumeType: "gp3"

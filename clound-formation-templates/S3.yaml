@@ -1,0 +1,8 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation template for creating an S3 bucket for image hosting.'
+
+Resources:
+  S3Bio113-dev:
+    BucketName: bio113-test-bucket
+      #      AmazonS3FullAccess
+

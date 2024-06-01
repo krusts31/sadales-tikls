@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Sample Template to create an IAM User
+
+Resources:
+  MyIAMUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: MySampleUser
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+      Tags:
+        - Key: Name
+          Value: MySampleUser
+
+  MyAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName:
+        Ref: MyIAMUser
+
+Outputs:
+  AccessKeyId:
+    Description: Access Key ID of the new user
+    Value: !Ref MyAccessKey
+  SecretAccessKey:
+    Description: Secret Access Key of the new user
+    Value: !GetAtt MyAccessKey.SecretAccessKey
+

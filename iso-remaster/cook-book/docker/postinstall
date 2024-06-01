@@ -1,0 +1,61 @@
+#!/bin/sh
+
+set -e
+
+# empty message of the day.
+echo -n > /etc/motd
+
+# remove some unused packages
+DEBIAN_FRONTEND=noninteractive apt-get purge -y laptop-detect tasksel emacsen-common ienglish-common ispell
+
+# install some additional packages
+DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends linux-headers-amd64 openssh-server sudo time openssl gnutls-bin zip unzip bzip2 lynx vim vim-scripts curl whois screen git gpg-agent gnupg software-properties-common tcpdump make zsh ufw ca-certificates
+
+# members of `sudo` group are not asked for password.
+sed -i 's/^%sudo\tALL=(ALL:ALL) ALL/%sudo\tALL=(ALL:ALL) NOPASSWD:ALL/' /etc/sudoers
+
+# new users should be put into the "users" group
+sed -i 's/^USERGROUPS=yes/USERGROUPS=no/' /etc/adduser.conf
+
+# fix the time server configuration
+sed -i 's/^#NTP=/NTP=us.pool.ntp.org/' /etc/systemd/timesyncd.conf
+
+# unpack the postinstall tar file
+tar -z -x -C /tmp -f /tmp/postinstall.tar.gz
+
+# install global things and root things
+mkdir -m700 -p /root/.ssh
+
+cp /tmp/postinstall.d/vimrc /root/.vimrc
+
+# add our sudoers file for debian
+cp /tmp/postinstall.d/sudoers /etc/sudoers.d/debian
+chmod 400 /etc/sudoers.d/debian
+
+# fix permissions on root home directory
+chmod 700 /root
+
+# fix permissions on debian home directory
+chown -R debian:debian /home/debian
+chmod 700 /home/debian
+
+rm -rf /etc/ssh/sshd_config
+mv /tmp/postinstall.d/sshd_config /etc/ssh/sshd_config
+
+# Add Docker's official GPG key:
+#install -m 0755 -d /etc/apt/keyrings
+#curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+#chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add the repository to Apt sources:
+#echo \
+#  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+#  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+# tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+#DEBIAN_FRONTEND=noninteractive apt-get update -y
+
+#DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+#/usr/sbin/groupadd docker
+#/usr/sbin/usermod -aG docker debian
