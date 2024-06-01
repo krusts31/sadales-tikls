@@ -13,11 +13,7 @@ bash import.sh
 
 just a example vue3 app with mqtt server,
 
-go to http://localhost:3010/
-
-working on 
-
-The main goal here is to showcase my FastApi skills
+go to http://localhost:3010/ or http://localhost:8000
 
 Connecting to
 1. frontend
