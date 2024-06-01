@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+asyncpg
+pyjwt
+pyjwt[crypto]
+requests
+stripe
+python-multipart
+python-jose
+passlib
+
+flake8
+pydantic
+loguru
