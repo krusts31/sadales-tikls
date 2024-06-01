@@ -10,6 +10,10 @@ https://workaround.org/ispmail-bookworm/
 In `.env-dev`, change the domain you use:
 DOMAIN=your-desired-domain.com
 
+### Step 2 Edit Makefile replace vitokap-dev with your domain
+
+### Step 3
+
 ```bash
 If you are using NAT:
 echo "127.0.0.1 your-desired-domain.com" >> /etc/hosts
